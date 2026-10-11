@@ -688,3 +688,24 @@ ul {
   border-color: var(--clr-primary);
 }
 .contact-form .btn { width: 100%; }
+
+/* ============================================================
+   RESPONSIVE  (tablet + phone)
+   ============================================================ */
+
+/* ---- Tablet <= 768px ---- */
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .hero { min-height: 50vh; }
+}
+
+/* ---- Phone <= 480px ---- */
+@media (max-width: 480px) {
+  .header-inner { flex-direction: column; gap: .75rem; }
+  .nav-list { gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .trainer-card, .pricing-card { max-width: 100%; }
+  .card-featured { transform: none; }
+  .card-featured:hover { transform: translateY(-4px); }
+  .hero { min-height: 40vh; padding: 3rem var(--gutter); }
+  .section { padding: 3rem var(--gutter); }
+}
