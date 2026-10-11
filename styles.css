@@ -143,3 +143,71 @@ ul { list-style: none; }
   margin: .75rem auto 0;
   border-radius: 2px;
 }
+
+/* ---------- Class-type colors ---------- */
+:root {
+  --clr-hiit:        #e6394660;
+  --clr-yoga:        #2a9d8f60;
+  --clr-strength:    #e9c46a60;
+  --clr-cycle:       #264653a0;
+  --clr-boxing:      #f4a26160;
+}
+
+/* ============================================================
+   CLASS SCHEDULE  (CSS Grid)
+   ============================================================ */
+.classes-section { overflow-x: auto; }
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 5rem repeat(6, 1fr);
+  gap: 2px;
+  min-width: 600px;
+  border-radius: .5rem;
+  overflow: hidden;
+}
+
+.schedule-header {
+  background: var(--clr-dark);
+  color: var(--clr-accent);
+  font-weight: 700;
+  text-align: center;
+  padding: .75rem .5rem;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.schedule-time {
+  background: var(--clr-dark);
+  color: var(--clr-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .75rem .5rem;
+  font-size: .85rem;
+}
+
+.schedule-cell {
+  background: var(--clr-surface);
+  padding: .75rem .5rem;
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 500;
+  min-height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s;
+}
+.schedule-cell:not(:empty):hover {
+  transform: scale(1.04);
+  z-index: 1;
+}
+
+.cell-hiit     { background: var(--clr-hiit); }
+.cell-yoga     { background: var(--clr-yoga); }
+.cell-strength { background: var(--clr-strength); color: var(--clr-dark); }
+.cell-cycle    { background: var(--clr-cycle); }
+.cell-boxing   { background: var(--clr-boxing); }
