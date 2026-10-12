@@ -1,14 +1,7 @@
-/* ============================================================
-   Pulse Fitness Studio – styles.css
-   ============================================================ */
-
-/* ---------- Reset & base ---------- */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 /* ---------- CSS Custom Properties ---------- */
@@ -113,9 +106,9 @@ ul {
   text-decoration: none;
 }
 
-/* ============================================================
+/*             
    1. HEADER  (Flexbox)
-   ============================================================ */
+                */
 .site-header {
   position: sticky;
   top: 0;
@@ -162,9 +155,9 @@ ul {
   text-decoration: none;
 }
 
-/* ============================================================
+/*             
    2. HERO  (Flexbox centering)
-   ============================================================ */
+                */
 .hero {
   display: flex;               /* ◀ FLEXBOX */
   align-items: center;
@@ -193,9 +186,9 @@ ul {
   margin-bottom: 2rem;
 }
 
-/* ============================================================
+/*             
    3. CLASS SCHEDULE  (CSS Grid – the real star)
-   ============================================================ */
+                */
 .classes-section {
   overflow-x: auto;            /* scrollable on tiny screens */
 }
@@ -255,9 +248,9 @@ ul {
 .cell-cycle    { background: var(--clr-cycle); }
 .cell-boxing   { background: var(--clr-boxing); }
 
-/* ============================================================
+/*             
    4. TRAINER CARDS  (Flexbox wrap)
-   ============================================================ */
+                */
 .trainer-cards {
   display: flex;               /* ◀ FLEXBOX */
   flex-wrap: wrap;
@@ -305,9 +298,9 @@ ul {
   line-height: 1.5;
 }
 
-/* ============================================================
+/*             
    5. PRICING CARDS  (Flexbox)
-   ============================================================ */
+                */
 .pricing-cards {
   display: flex;               /* ◀ FLEXBOX */
   flex-wrap: wrap;
@@ -405,9 +398,9 @@ ul {
   font-weight: 700;
 }
 
-/* ============================================================
+/*             
    6. CONTACT  (CSS Grid – two-column)
-   ============================================================ */
+                */
 .contact-grid {
   display: grid;               /* ◀ CSS GRID */
   grid-template-columns: 1fr 1fr;
@@ -454,9 +447,9 @@ ul {
   width: 100%;
 }
 
-/* ============================================================
+/*             
    7. FOOTER
-   ============================================================ */
+                */
 .site-footer {
   text-align: center;
   padding: 2rem var(--gutter);
@@ -465,9 +458,9 @@ ul {
   border-top: 1px solid var(--clr-border);
 }
 
-/* ============================================================
+/*             
    8. SECTION HEADINGS (shared)
-   ============================================================ */
+                */
 .section h2 {
   font-family: var(--ff-heading);
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
@@ -486,9 +479,9 @@ ul {
   border-radius: 2px;
 }
 
-/* ============================================================
+/*             
    9. RESPONSIVE  (tablet → phone)
-   ============================================================ */
+                */
 
 /* ---- Tablet ≤ 768px ---- */
 @media (max-width: 768px) {
@@ -537,9 +530,9 @@ ul {
 }
 
 
-/* ============================================================
+/*             
    TRAINER CARDS  (Flexbox wrap)
-   ============================================================ */
+                */
 .trainer-cards {
   display: flex;
   flex-wrap: wrap;
@@ -568,9 +561,9 @@ ul {
 .trainer-specialty { color: var(--clr-accent); font-weight: 600; font-size: .9rem; margin-bottom: .75rem; }
 .trainer-card p:last-of-type { color: var(--clr-muted); font-size: .9rem; line-height: 1.5; }
 
-/* ============================================================
+/*             
    PRICING CARDS  (Flexbox)
-   ============================================================ */
+                */
 .btn-outline {
   background: transparent;
   color: var(--clr-accent);
@@ -650,9 +643,9 @@ ul {
   color: var(--clr-accent); font-weight: 700;
 }
 
-/* ============================================================
+/*             
    CONTACT  (CSS Grid - two-column)
-   ============================================================ */
+                */
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -689,9 +682,9 @@ ul {
 }
 .contact-form .btn { width: 100%; }
 
-/* ============================================================
+/*             
    RESPONSIVE  (tablet + phone)
-   ============================================================ */
+                */
 
 /* ---- Tablet <= 768px ---- */
 @media (max-width: 768px) {
