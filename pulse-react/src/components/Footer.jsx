@@ -1,6 +1,6 @@
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+const CURRENT_YEAR = new Date().getFullYear();
 
+export default function Footer() {
   return (
     <footer className="border-t border-[#3a3a50] bg-[#1d1d2c] text-[#9a9ab0] py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
@@ -24,7 +24,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <p className="text-xs text-[#9a9ab0]">
-          &copy; {currentYear} Pulse Fitness Studio. All rights reserved.
+          &copy; {CURRENT_YEAR} Pulse Fitness Studio. All rights reserved.
         </p>
       </div>
     </footer>
