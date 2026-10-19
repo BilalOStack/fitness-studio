@@ -1,28 +1,38 @@
 # Pulse Fitness Studio
 
-A single-page, responsive website for a fitness studio built with **plain HTML5 and CSS3** — no frameworks, no JavaScript dependencies.
+A responsive website for a high-performance fitness studio in Portland, OR.
+Originally built with plain HTML5 and CSS3, and rebuilt in Week 2 using **React + Tailwind CSS** inside `pulse-react/`.
 
-## Features
+---
 
-- **Class schedule** laid out with CSS Grid (7-column timetable)
-- **Trainer bios** as Flexbox-wrapped cards
-- **Membership tiers** as pricing cards with a featured highlight
-- **Contact section** using a two-column CSS Grid
-- Fully responsive — phone, tablet, and desktop
-- Semantic HTML5 landmarks (`<header>`, `<main>`, `<nav>`, `<section>`, `<footer>`)
-- Single `<h1>`, working anchor-link navigation
-- `box-sizing: border-box` applied globally
-- CSS custom properties for the entire color palette
+## ⚡ React + Tailwind Version (`pulse-react/`)
 
-## Tech
+Rebuilt following the Week 2 BrewHaus pattern:
 
-| Layer | Tool |
-|-------|------|
-| Markup | HTML5 |
-| Styling | CSS3 (Flexbox + Grid) |
-| Frameworks | None |
+- **Vite + React** (JavaScript, no TypeScript, no external icon/UI libraries)
+- **Tailwind CSS** fully wired in for all styling
+- **Componentized architecture**: `Header`, `Hero`, `MainContent`, `Footer`
+- **Central Data File**: `src/data.js` containing classes, trainers, pricing, and studio info
+- **Real Filter**: Filter classes by category (`All`, `HIIT`, `Yoga`, `Strength`, `Cycle`, `Boxing`) with `useState`
+- **Controlled Component**: `QuantityStepper` reused per class card to select reserve spots
+- **Mobile-First Responsive Layout**: unprefixed $\to$ `sm:` $\to$ `md:` $\to$ `lg:`, no horizontal overflow on any device
 
-## Local Preview
+### Running Locally
+```bash
+cd pulse-react
+npm install
+npm run dev
+```
 
-Open `index.html` in any modern browser — no build step required.
+### Production Build & Lint
+```bash
+cd pulse-react
+npm run build
+npm run lint
+```
 
+---
+
+## 🖥️ Original Vanilla Version
+
+Open `index.html` in any modern browser — no dependencies or build steps required.
