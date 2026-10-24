@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "npm --prefix pulse-react run dev",
     "build": "npm --prefix pulse-react run build",
-    "lint": "npm --prefix pulse-react run lint",
-    "preview": "npm --prefix pulse-react run preview"
+    "start": "npm --prefix pulse-react run start",
+    "seed": "npm --prefix pulse-react run seed",
+    "lint": "npm --prefix pulse-react run lint"
   }
 }

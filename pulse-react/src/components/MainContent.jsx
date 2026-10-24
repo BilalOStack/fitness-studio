@@ -1,8 +1,19 @@
-import { useState } from 'react';
-import { CATEGORIES, CLASSES, TRAINERS, PRICING_PLANS, STUDIO_INFO } from '../data';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { CATEGORIES, CLASSES as FALLBACK_CLASSES, TRAINERS as FALLBACK_TRAINERS, PRICING_PLANS as FALLBACK_PRICING, STUDIO_INFO } from '../data';
 import QuantityStepper from './QuantityStepper';
+import { useAuth } from '../context/AuthContext';
 
 export default function MainContent() {
+  const { user, openAuthModal } = useAuth();
+
+  // Dynamic API state
+  const [classes, setClasses] = useState(FALLBACK_CLASSES);
+  const [trainers, setTrainers] = useState(FALLBACK_TRAINERS);
+  const [pricingPlans, setPricingPlans] = useState(FALLBACK_PRICING);
+  const [_loadingClasses, setLoadingClasses] = useState(true);
+
   // Real filter on main grid with useState
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -11,15 +22,57 @@ export default function MainContent() {
 
   // Booking toast notification
   const [bookingNotice, setBookingNotice] = useState(null);
+  const [bookingError, setBookingError] = useState(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // Contact form state
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [contactSubmitted, setContactSubmitted] = useState(false);
 
+  // Fetch classes, trainers, and pricing from real Postgres API
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [classesRes, trainersRes, pricingRes] = await Promise.all([
+          fetch('/api/classes').catch(() => null),
+          fetch('/api/trainers').catch(() => null),
+          fetch('/api/pricing').catch(() => null),
+        ]);
+
+        if (classesRes && classesRes.ok) {
+          const classesData = await classesRes.json();
+          if (Array.isArray(classesData) && classesData.length > 0) {
+            setClasses(classesData);
+          }
+        }
+
+        if (trainersRes && trainersRes.ok) {
+          const trainersData = await trainersRes.json();
+          if (Array.isArray(trainersData) && trainersData.length > 0) {
+            setTrainers(trainersData);
+          }
+        }
+
+        if (pricingRes && pricingRes.ok) {
+          const pricingData = await pricingRes.json();
+          if (Array.isArray(pricingData) && pricingData.length > 0) {
+            setPricingPlans(pricingData);
+          }
+        }
+      } catch (err) {
+        console.warn('API fetch warning, using fallback data:', err);
+      } finally {
+        setLoadingClasses(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   // Filtered classes derived state
   const filteredClasses = selectedCategory === 'All'
-    ? CLASSES
-    : CLASSES.filter((cls) => cls.category === selectedCategory);
+    ? classes
+    : classes.filter((cls) => cls.category === selectedCategory);
 
   const handleIncrement = (classId, max) => {
     setSpotsMap((prev) => ({
@@ -35,13 +88,60 @@ export default function MainContent() {
     }));
   };
 
-  const handleBookClass = (classItem) => {
+  const handleBookClass = async (classItem) => {
     const qty = spotsMap[classItem.id] || 1;
-    const msg = `Reserved ${qty} spot${qty > 1 ? 's' : ''} for "${classItem.title}" on ${classItem.days.join(', ')} at ${classItem.time}!`;
-    setBookingNotice(msg);
-    setTimeout(() => {
-      setBookingNotice(null);
-    }, 4000);
+
+    // If guest, prompt to sign in first
+    if (!user) {
+      setBookingError('Please sign in to reserve spots.');
+      openAuthModal('signin');
+      setTimeout(() => setBookingError(null), 4000);
+      return;
+    }
+
+    setBookingLoading(true);
+    setBookingError(null);
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('pulsefit_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          classId: classItem.id,
+          spots: qty,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to book class');
+      }
+
+      // Update remaining spots in local state
+      setClasses((prev) =>
+        prev.map((c) =>
+          c.id === classItem.id
+            ? { ...c, spotsAvailable: Math.max(0, c.spotsAvailable - qty) }
+            : c
+        )
+      );
+
+      // Reset stepper
+      setSpotsMap((prev) => ({ ...prev, [classItem.id]: 1 }));
+
+      const msg = `✓ Reserved ${qty} spot${qty > 1 ? 's' : ''} for "${classItem.title}" on ${classItem.days.join(', ')} at ${classItem.time}!`;
+      setBookingNotice(msg);
+      setTimeout(() => setBookingNotice(null), 4000);
+    } catch (err) {
+      setBookingError(err.message || 'Booking failed');
+      setTimeout(() => setBookingError(null), 4000);
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   const handleContactSubmit = (e) => {
@@ -68,6 +168,22 @@ export default function MainContent() {
         </div>
       )}
 
+      {/* Booking Error Notice */}
+      {bookingError && (
+        <div className="fixed bottom-4 right-4 z-50 bg-[#27273a] border-l-4 border-[#e63946] text-white px-4 py-3 rounded-md shadow-xl text-sm flex items-center gap-3 animate-fade-in max-w-sm">
+          <span>⚠️</span>
+          <span>{bookingError}</span>
+          <button
+            type="button"
+            onClick={() => setBookingError(null)}
+            className="ml-auto text-[#9a9ab0] hover:text-white"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* ============================================================
           1. CLASS SCHEDULE SECTION (Filtered Grid + QuantityStepper)
           ============================================================ */}
@@ -83,7 +199,7 @@ export default function MainContent() {
             Weekly Class Schedule
           </h2>
           <p className="text-sm sm:text-base text-[#9a9ab0] mt-3 max-w-xl mx-auto">
-            Choose your workout style and reserve your spot in advance. Spots are limited per session.
+            Choose your workout style and reserve your spot in advance. Powered by our real-time database.
           </p>
         </div>
 
@@ -92,8 +208,8 @@ export default function MainContent() {
           {CATEGORIES.map((category) => {
             const isSelected = selectedCategory === category;
             const count = category === 'All'
-              ? CLASSES.length
-              : CLASSES.filter((c) => c.category === category).length;
+              ? classes.length
+              : classes.filter((c) => c.category === category).length;
 
             return (
               <button
@@ -119,6 +235,7 @@ export default function MainContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredClasses.map((item) => {
             const currentQty = spotsMap[item.id] || 1;
+            const isSoldOut = item.spotsAvailable <= 0;
 
             return (
               <article
@@ -168,28 +285,35 @@ export default function MainContent() {
 
                 {/* Controlled Component: QuantityStepper reused per item */}
                 <div className="pt-4 border-t border-[#3a3a50] space-y-3">
-                  <QuantityStepper
-                    value={currentQty}
-                    onIncrement={() => handleIncrement(item.id, item.spotsAvailable)}
-                    onDecrement={() => handleDecrement(item.id)}
-                    min={1}
-                    max={item.spotsAvailable}
-                    label="Spots"
-                  />
+                  {!isSoldOut ? (
+                    <QuantityStepper
+                      value={currentQty}
+                      onIncrement={() => handleIncrement(item.id, item.spotsAvailable)}
+                      onDecrement={() => handleDecrement(item.id)}
+                      min={1}
+                      max={item.spotsAvailable}
+                      label="Spots"
+                    />
+                  ) : (
+                    <div className="py-2 text-center text-xs text-red-400 font-semibold bg-red-950/30 rounded-md">
+                      Class Full (0 spots left)
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between text-xs text-[#9a9ab0]">
                     <span>Available:</span>
-                    <span className="text-teal-400 font-medium">
+                    <span className={isSoldOut ? 'text-red-400 font-bold' : 'text-teal-400 font-medium'}>
                       {item.spotsAvailable} spots left
                     </span>
                   </div>
 
                   <button
                     type="button"
+                    disabled={isSoldOut || bookingLoading}
                     onClick={() => handleBookClass(item)}
-                    className="w-full bg-[#e63946] hover:bg-[#b52d38] text-white font-semibold py-2.5 px-4 rounded-md text-sm transition-colors shadow-sm"
+                    className="w-full bg-[#e63946] hover:bg-[#b52d38] disabled:bg-[#3a3a50] disabled:text-[#9a9ab0] text-white font-semibold py-2.5 px-4 rounded-md text-sm transition-colors shadow-sm"
                   >
-                    Reserve {currentQty} {currentQty === 1 ? 'Spot' : 'Spots'}
+                    {isSoldOut ? 'Sold Out' : `Reserve ${currentQty} ${currentQty === 1 ? 'Spot' : 'Spots'}`}
                   </button>
                 </div>
               </article>
@@ -219,7 +343,7 @@ export default function MainContent() {
 
         {/* Responsive grid mobile-first */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TRAINERS.map((trainer) => (
+          {trainers.map((trainer) => (
             <article
               key={trainer.id}
               className="bg-[#27273a] border border-[#3a3a50] rounded-xl p-6 text-center flex flex-col items-center hover:-translate-y-1 hover:border-[#f4a261]/50 transition duration-200"
@@ -262,7 +386,7 @@ export default function MainContent() {
 
         {/* Responsive grid mobile-first */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-5xl mx-auto">
-          {PRICING_PLANS.map((plan) => (
+          {pricingPlans.map((plan) => (
             <article
               key={plan.id}
               className={`relative bg-[#27273a] rounded-xl p-6 sm:p-8 flex flex-col text-center border transition duration-200 ${
@@ -296,8 +420,16 @@ export default function MainContent() {
                 ))}
               </ul>
 
-              <a
-                href="#contact"
+              <button
+                type="button"
+                onClick={() => {
+                  if (!user) {
+                    openAuthModal('signup');
+                  } else {
+                    const el = document.getElementById('contact');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition duration-200 ${
                   plan.featured
                     ? 'bg-[#e63946] hover:bg-[#b52d38] text-white shadow-md'
@@ -305,7 +437,7 @@ export default function MainContent() {
                 }`}
               >
                 {plan.buttonText}
-              </a>
+              </button>
             </article>
           ))}
         </div>
