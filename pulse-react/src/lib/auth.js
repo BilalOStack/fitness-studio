@@ -68,3 +68,22 @@ export async function getAuthUser(request) {
     return null;
   }
 }
+
+/**
+ * Auth middleware helper for API routes.
+ * Verifies the user is signed in and returns `{ user }` or `{ errorResponse }` (401).
+ * @param {Request} request
+ */
+export async function requireAuth(request) {
+  const user = await getAuthUser(request);
+  if (!user) {
+    return {
+      user: null,
+      errorResponse: Response.json(
+        { error: 'Authentication required. Please sign in before checking out.' },
+        { status: 401 }
+      ),
+    };
+  }
+  return { user, errorResponse: null };
+}
