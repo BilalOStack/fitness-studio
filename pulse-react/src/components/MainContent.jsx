@@ -5,6 +5,13 @@ import { CATEGORIES, CLASSES as FALLBACK_CLASSES, TRAINERS as FALLBACK_TRAINERS,
 import QuantityStepper from './QuantityStepper';
 import { useAuth } from '../context/AuthContext';
 
+const CLASS_TITLE_IMAGES = {
+  'Sunrise Yoga': '/images/class-sunrise-yoga.jpg',
+  'Strength Lab': '/images/class-strength-lab.jpg',
+  'Kickboxing': '/images/class-kickboxing.jpg',
+  'Fight Club': '/images/class-fight-club.jpg',
+};
+
 const CATEGORY_IMAGES = {
   HIIT: '/images/class-hiit.jpg',
   Yoga: '/images/class-yoga.jpg',
@@ -307,7 +314,7 @@ export default function MainContent() {
                   {/* Visual Class Banner */}
                   <div className="relative h-36 w-full overflow-hidden bg-[#1d1d2c]">
                     <img
-                      src={CATEGORY_IMAGES[item.category] || CATEGORY_IMAGES.HIIT}
+                      src={CLASS_TITLE_IMAGES[item.title] || CATEGORY_IMAGES[item.category] || CATEGORY_IMAGES.HIIT}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-85"
                       loading="lazy"
