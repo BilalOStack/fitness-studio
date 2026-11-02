@@ -322,7 +322,7 @@ export default function MainContent() {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#27273a] via-[#27273a]/30 to-transparent" />
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
                       <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-md ${item.tagColor}`}>
-                        {item.category.toUpperCase()}
+                        {item.title.toUpperCase()}
                       </span>
                       <span className="text-xs font-semibold text-white bg-[#121220]/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-[#3a3a50]">
                         {item.duration}
