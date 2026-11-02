@@ -24,6 +24,7 @@ export default function MainContent() {
   const [bookingNotice, setBookingNotice] = useState(null);
   const [bookingError, setBookingError] = useState(null);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [checkoutLoadingId, setCheckoutLoadingId] = useState(null);
 
   // Contact form state
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
@@ -141,6 +142,51 @@ export default function MainContent() {
       setTimeout(() => setBookingError(null), 4000);
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  // Step 6: Wire up "Buy now" / "Order now" button to call /api/checkout and redirect to Stripe Checkout
+  const handleCheckout = async ({ itemType, itemId, quantity = 1 }) => {
+    if (!user) {
+      setBookingError('Please sign in before purchasing a membership or class pass.');
+      openAuthModal('signin');
+      setTimeout(() => setBookingError(null), 4000);
+      return;
+    }
+
+    const loadingKey = `${itemType}-${itemId}`;
+    setCheckoutLoadingId(loadingKey);
+    setBookingError(null);
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('pulsefit_token') : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          itemType,
+          itemId,
+          quantity,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to start Stripe Checkout');
+      }
+
+      if (data.url) {
+        window.location.assign(data.url);
+      } else {
+        throw new Error('No checkout URL returned from server');
+      }
+    } catch (err) {
+      setBookingError(err.message || 'Checkout failed');
+      setTimeout(() => setBookingError(null), 5000);
+      setCheckoutLoadingId(null);
     }
   };
 
@@ -303,18 +349,32 @@ export default function MainContent() {
                   <div className="flex items-center justify-between text-xs text-[#9a9ab0]">
                     <span>Available:</span>
                     <span className={isSoldOut ? 'text-red-400 font-bold' : 'text-teal-400 font-medium'}>
-                      {item.spotsAvailable} spots left
+                      {item.spotsAvailable} spots left · ${item.price || 15}/spot
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    disabled={isSoldOut || bookingLoading}
-                    onClick={() => handleBookClass(item)}
-                    className="w-full bg-[#e63946] hover:bg-[#b52d38] disabled:bg-[#3a3a50] disabled:text-[#9a9ab0] text-white font-semibold py-2.5 px-4 rounded-md text-sm transition-colors shadow-sm"
-                  >
-                    {isSoldOut ? 'Sold Out' : `Reserve ${currentQty} ${currentQty === 1 ? 'Spot' : 'Spots'}`}
-                  </button>
+                  <div className="grid grid-cols-1 gap-2">
+                    <button
+                      type="button"
+                      disabled={isSoldOut || checkoutLoadingId === `class-${item.id}`}
+                      onClick={() => handleCheckout({ itemType: 'class', itemId: item.id, quantity: currentQty })}
+                      className="w-full bg-[#e63946] hover:bg-[#b52d38] disabled:bg-[#3a3a50] disabled:text-[#9a9ab0] text-white font-semibold py-2.5 px-4 rounded-md text-sm transition-colors shadow-sm"
+                    >
+                      {isSoldOut
+                        ? 'Sold Out'
+                        : checkoutLoadingId === `class-${item.id}`
+                          ? 'Redirecting to Stripe...'
+                          : `Buy Now — $${(item.price || 15) * currentQty} (${currentQty} ${currentQty === 1 ? 'Spot' : 'Spots'})`}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isSoldOut || bookingLoading}
+                      onClick={() => handleBookClass(item)}
+                      className="w-full bg-[#1d1d2c] hover:bg-[#3a3a50] disabled:bg-[#3a3a50] disabled:text-[#9a9ab0] text-[#eaeaf0] border border-[#3a3a50] font-medium py-1.5 px-3 rounded-md text-xs transition-colors"
+                    >
+                      {isSoldOut ? 'Sold Out' : `Member Reserve (${currentQty} ${currentQty === 1 ? 'Spot' : 'Spots'})`}
+                    </button>
+                  </div>
                 </div>
               </article>
             );
@@ -422,21 +482,17 @@ export default function MainContent() {
 
               <button
                 type="button"
-                onClick={() => {
-                  if (!user) {
-                    openAuthModal('signup');
-                  } else {
-                    const el = document.getElementById('contact');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition duration-200 ${
+                disabled={checkoutLoadingId === `plan-${plan.id}`}
+                onClick={() => handleCheckout({ itemType: 'plan', itemId: plan.id, quantity: 1 })}
+                className={`w-full py-2.5 px-4 rounded-md font-semibold text-sm transition duration-200 disabled:opacity-60 ${
                   plan.featured
                     ? 'bg-[#e63946] hover:bg-[#b52d38] text-white shadow-md'
                     : 'border-2 border-[#f4a261] text-[#f4a261] hover:bg-[#f4a261] hover:text-[#1d1d2c]'
                 }`}
               >
-                {plan.buttonText}
+                {checkoutLoadingId === `plan-${plan.id}`
+                  ? 'Redirecting to Stripe...'
+                  : `Buy Now — $${plan.price}`}
               </button>
             </article>
           ))}
