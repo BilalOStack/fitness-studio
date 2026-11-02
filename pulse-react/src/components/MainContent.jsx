@@ -5,6 +5,21 @@ import { CATEGORIES, CLASSES as FALLBACK_CLASSES, TRAINERS as FALLBACK_TRAINERS,
 import QuantityStepper from './QuantityStepper';
 import { useAuth } from '../context/AuthContext';
 
+const CATEGORY_IMAGES = {
+  HIIT: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80',
+  Yoga: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80',
+  Strength: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80',
+  Cycle: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80',
+  Boxing: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=600&q=80',
+};
+
+const TRAINER_PHOTOS = {
+  marcus: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=400&q=80',
+  priya: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=400&q=80',
+  dani: 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=400&q=80',
+  jordan: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+};
+
 export default function MainContent() {
   const { user, openAuthModal } = useAuth();
 
@@ -286,51 +301,62 @@ export default function MainContent() {
             return (
               <article
                 key={item.id}
-                className="bg-[#27273a] border border-[#3a3a50] rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-[#f4a261]/50 hover:-translate-y-1 transition duration-200 shadow-lg"
+                className="bg-[#27273a] border border-[#3a3a50] rounded-xl overflow-hidden flex flex-col justify-between hover:border-[#f4a261]/50 hover:-translate-y-1 transition duration-200 shadow-lg group"
               >
                 <div>
-                  {/* Top Bar: Category badge & Duration */}
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${item.tagColor}`}>
-                      {item.category.toUpperCase()}
-                    </span>
-                    <span className="text-xs text-[#9a9ab0]">
-                      {item.duration}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
-                    {item.title}
-                  </h3>
-
-                  {/* Trainer & Time */}
-                  <div className="space-y-1 text-xs sm:text-sm text-[#9a9ab0] mb-3">
-                    <p className="flex items-center gap-1.5 text-white/90">
-                      <span>Coach:</span>
-                      <strong className="text-[#f4a261]">{item.trainer}</strong>
-                    </p>
-                    <p className="flex items-center gap-1.5">
-                      <span>Time:</span>
-                      <span className="text-white font-medium">{item.time}</span>
-                    </p>
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {item.days.map((day) => (
-                        <span key={day} className="px-1.5 py-0.5 rounded bg-[#1d1d2c] text-xs text-[#eaeaf0]">
-                          {day}
-                        </span>
-                      ))}
+                  {/* Visual Class Banner */}
+                  <div className="relative h-36 w-full overflow-hidden bg-[#1d1d2c]">
+                    <img
+                      src={CATEGORY_IMAGES[item.category] || CATEGORY_IMAGES.HIIT}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-85"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#27273a] via-[#27273a]/30 to-transparent" />
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-md ${item.tagColor}`}>
+                        {item.category.toUpperCase()}
+                      </span>
+                      <span className="text-xs font-semibold text-white bg-[#121220]/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-[#3a3a50]">
+                        {item.duration}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-xs sm:text-sm text-[#9a9ab0] mb-4 leading-relaxed">
-                    {item.description}
-                  </p>
+                  <div className="p-5 sm:p-6 pb-0">
+                    {/* Title */}
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-1">
+                      {item.title}
+                    </h3>
+
+                    {/* Trainer & Time */}
+                    <div className="space-y-1 text-xs sm:text-sm text-[#9a9ab0] mb-3">
+                      <p className="flex items-center gap-1.5 text-white/90">
+                        <span>Coach:</span>
+                        <strong className="text-[#f4a261]">{item.trainer}</strong>
+                      </p>
+                      <p className="flex items-center gap-1.5">
+                        <span>Time:</span>
+                        <span className="text-white font-medium">{item.time}</span>
+                      </p>
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {item.days.map((day) => (
+                          <span key={day} className="px-1.5 py-0.5 rounded bg-[#1d1d2c] text-xs text-[#eaeaf0]">
+                            {day}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs sm:text-sm text-[#9a9ab0] mb-4 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Controlled Component: QuantityStepper reused per item */}
-                <div className="pt-4 border-t border-[#3a3a50] space-y-3">
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-4 border-t border-[#3a3a50] space-y-3">
                   {!isSoldOut ? (
                     <QuantityStepper
                       value={currentQty}
@@ -406,10 +432,27 @@ export default function MainContent() {
           {trainers.map((trainer) => (
             <article
               key={trainer.id}
-              className="bg-[#27273a] border border-[#3a3a50] rounded-xl p-6 text-center flex flex-col items-center hover:-translate-y-1 hover:border-[#f4a261]/50 transition duration-200"
+              className="bg-[#27273a] border border-[#3a3a50] rounded-xl p-6 text-center flex flex-col items-center hover:-translate-y-1 hover:border-[#f4a261]/50 transition duration-200 group"
             >
-              <div className="w-16 h-16 rounded-full bg-[#1d1d2c] flex items-center justify-center text-3xl mb-4 shadow-inner" aria-hidden="true">
-                {trainer.avatar}
+              <div className="relative w-20 h-20 rounded-full bg-[#1d1d2c] mb-4 p-0.5 border-2 border-[#f4a261]/60 shadow-lg">
+                {TRAINER_PHOTOS[trainer.id] ? (
+                  <img
+                    src={TRAINER_PHOTOS[trainer.id]}
+                    alt={trainer.name}
+                    className="w-full h-full rounded-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full flex items-center justify-center text-3xl">
+                    {trainer.avatar}
+                  </div>
+                )}
+                <span
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#1d1d2c] border border-[#3a3a50] flex items-center justify-center text-sm shadow"
+                  aria-hidden="true"
+                >
+                  {trainer.avatar}
+                </span>
               </div>
               <h3 className="text-lg font-bold text-white mb-1">
                 {trainer.name}
