@@ -63,6 +63,60 @@ Our PostgreSQL database consists of 5 related tables:
    - `spots`: Number of spots reserved.
    - `created_at`: Timestamp of reservation.
 
+6. **`orders`** *(Week 4 — Stripe Checkout)*:
+   - `id`: Unique order ID (one row per purchase).
+   - `user_id`: Foreign key pointing to `users(id)` (every order is tied to a signed-in user).
+   - `status`: Order payment state (`pending` when checkout starts $\to$ `paid` ONLY when Stripe webhook confirms payment).
+   - `total_amount`: Total order amount in cents (calculated strictly from database prices).
+   - `stripe_session_id`: Stripe Checkout Session ID (`cs_test_...`).
+   - `stripe_payment_intent_id`: Stripe PaymentIntent ID (`pi_...`).
+   - `paid_at`, `created_at`: Payment confirmation and creation timestamps.
+
+7. **`order_items`** *(Week 4 — Stripe Checkout)*:
+   - `id`: Unique line item ID.
+   - `order_id`: Foreign key pointing to `orders(id)`.
+   - `item_type`: Type of item purchased (`plan` or `class`).
+   - `item_id`: Product ID in `pricing_plans` or `classes`.
+   - `item_name`: Snapshot of product name at time of purchase.
+   - `quantity`: Quantity purchased.
+   - `unit_price`: Unit price in cents looked up from the database.
+
+---
+
+## 💳 Week 4: Real Payments with Stripe Checkout (Test Mode)
+
+### 1. Local Setup with Stripe CLI
+1. Sign up or log in to [dashboard.stripe.com](https://dashboard.stripe.com) and make sure **Test mode** is enabled.
+2. Go to **Developers $\to$ API keys** and copy your **Secret key** (`sk_test_...`).
+3. Add it to `pulse-react/.env.local`:
+   ```env
+   STRIPE_SECRET_KEY=sk_test_...
+   ```
+4. Install and run the [Stripe CLI](https://docs.stripe.com/stripe-cli) to forward webhooks to your local server:
+   ```bash
+   stripe login
+   stripe listen --forward-to localhost:3000/api/webhook
+   ```
+5. Copy the webhook signing secret printed by the CLI (`whsec_...`) and add it to `pulse-react/.env.local`:
+   ```env
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   ```
+6. Push the updated schema (`orders` and `order_items` tables) to Neon:
+   ```bash
+   npm run seed
+   ```
+7. Start the dev server (`npm run dev`), sign in (e.g. `member@pulsefit.com` / `password123`), click any **Buy Now** button, and pay on Stripe Checkout using test card `4242 4242 4242 4242` (any future date, any CVC).
+8. You will be redirected to `/checkout/success`, which polls `/api/orders/[id]` until the webhook marks the order as **`paid`**.
+
+### 2. Production Setup (Vercel + Stripe Live Webhook)
+1. In your Vercel project **Settings $\to$ Environment Variables**, add:
+   - `STRIPE_SECRET_KEY`: Your `sk_test_...` key.
+   - `STRIPE_WEBHOOK_SECRET`: The signing secret (`whsec_...`) for your production webhook endpoint.
+2. In Stripe Dashboard (Test mode), go to **Developers $\to$ Webhooks $\to$ Add endpoint**:
+   - **Endpoint URL**: `https://your-vercel-domain.vercel.app/api/webhook`
+   - **Events to listen to**: `checkout.session.completed`
+3. Copy the endpoint's **Signing secret** (`whsec_...`) into Vercel's `STRIPE_WEBHOOK_SECRET` variable and redeploy.
+
 ---
 
 ## 🛠️ Step-by-Step Neon Database Setup

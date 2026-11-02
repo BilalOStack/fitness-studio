@@ -8,10 +8,11 @@ export default function Header() {
   const { user, logout, openAuthModal } = useAuth();
 
   const navLinks = [
-    { label: 'Classes', href: '#classes' },
-    { label: 'Trainers', href: '#trainers' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Classes', href: '/#classes' },
+    { label: 'Trainers', href: '/#trainers' },
+    { label: 'Pricing', href: '/#pricing' },
+    { label: 'Orders', href: '/orders' },
+    { label: 'Contact', href: '/#contact' },
   ];
 
   return (
@@ -19,7 +20,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <a href="#top" className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <a href="/" className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
             <span>Pulse<span className="text-[#e63946]">Fit</span></span>
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hidden sm:inline-block">
               Live API
