@@ -72,7 +72,7 @@ export default function Hero() {
             <div className="space-y-3 sm:space-y-4">
               <div className="relative rounded-2xl overflow-hidden border border-[#3a3a50] shadow-xl group h-44 sm:h-52">
                 <img
-                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=700&q=80"
+                  src="/images/class-strength.jpg"
                   alt="Strength and conditioning training floor"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   loading="eager"
@@ -86,8 +86,8 @@ export default function Hero() {
 
               <div className="relative rounded-2xl overflow-hidden border border-[#3a3a50] shadow-xl group h-36 sm:h-44">
                 <img
-                  src="https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=700&q=80"
-                  alt="Boxing bag workout session"
+                  src="/images/class-boxing.jpg"
+                  alt="Heavy bag boxing and kickboxing workout"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   loading="lazy"
                 />
@@ -102,8 +102,8 @@ export default function Hero() {
             <div className="space-y-3 sm:space-y-4 pt-6">
               <div className="relative rounded-2xl overflow-hidden border border-[#3a3a50] shadow-xl group h-36 sm:h-44">
                 <img
-                  src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=700&q=80"
-                  alt="Group HIIT and indoor cycling studio"
+                  src="/images/class-cycle.jpg"
+                  alt="Indoor cycling bikes and cardio studio"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   loading="lazy"
                 />
@@ -116,14 +116,14 @@ export default function Hero() {
 
               <div className="relative rounded-2xl overflow-hidden border border-[#3a3a50] shadow-xl group h-44 sm:h-52">
                 <img
-                  src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=700&q=80"
-                  alt="Power yoga and mobility flow"
+                  src="/images/class-yoga.jpg"
+                  alt="Power yoga and mobility flow studio"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#121220]/90 via-transparent to-transparent flex items-end p-3">
                   <span className="text-xs font-bold text-white bg-teal-500/90 px-2.5 py-0.5 rounded-full">
-                    Power Yoga Flow
+                    Mobility &amp; Flow Studio
                   </span>
                 </div>
               </div>
