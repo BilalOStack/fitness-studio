@@ -27,6 +27,7 @@ export async function GET(request) {
       duration: row.duration,
       trainer: row.trainer,
       spotsAvailable: row.spots_available,
+      price: row.price ?? 15,
       description: row.description,
       tagColor: row.tag_color,
     }));

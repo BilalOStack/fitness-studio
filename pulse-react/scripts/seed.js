@@ -285,13 +285,13 @@ async function seed() {
     console.log('🌱 Seeding classes...');
     for (const c of CLASSES) {
       await client.query(
-        `INSERT INTO classes (id, title, category, time, days, duration, trainer, spots_available, description, tag_color)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO classes (id, title, category, time, days, duration, trainer, spots_available, price, description, tag_color)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          ON CONFLICT (id) DO UPDATE
          SET title = EXCLUDED.title, category = EXCLUDED.category, time = EXCLUDED.time,
              days = EXCLUDED.days, duration = EXCLUDED.duration, trainer = EXCLUDED.trainer,
-             spots_available = EXCLUDED.spots_available, description = EXCLUDED.description,
-             tag_color = EXCLUDED.tag_color;`,
+             spots_available = EXCLUDED.spots_available, price = EXCLUDED.price,
+             description = EXCLUDED.description, tag_color = EXCLUDED.tag_color;`,
         [
           c.id,
           c.title,
@@ -301,6 +301,7 @@ async function seed() {
           c.duration,
           c.trainer,
           c.spotsAvailable,
+          c.price || 15,
           c.description,
           c.tagColor,
         ]
